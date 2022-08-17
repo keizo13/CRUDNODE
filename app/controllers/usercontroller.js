@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const crypte = require('../utils/crypto.js');
+const Crypto = require('../utils/crypto.js');
 
   class UserController {
 
@@ -11,7 +11,7 @@ const crypte = require('../utils/crypto.js');
     async add(req, res) {
      
             const {name, email, password, image} = req.body;      
-            const myEncryptPassword = await crypte.Encrypt.cryptPassword(password);
+            const myEncryptPassword = await Crypto.encryptPassword(password);
             const UserData = {name, email, password, image} ; 
             await User.create({
               name,
@@ -26,25 +26,40 @@ const crypte = require('../utils/crypto.js');
         try {
             const { id } = req.params;
             const user = await User.findByPk(id);
-            await user.save();
+            if (!user) {
+                throw new Error("Usuário não existe");
+            }            
             res.send(user);
         } catch(e) {
-            res.send("Usuário não existe");
+            res.status(404).send({ error: e.message });
         }
     }
 
     async alter(req,res) {
         try { 
             const { id } = req.params;
+            const { name, email, password, image } = req.body;
             const user = await User.findByPk(id);
-            user.name = req.body.name;
-            user.email = req.body.email;
-            user.password = req.body.password;
-            user.image = req.body.image;
-            await user.save();
+            if (!user) {
+                throw new Error("Usuário não existe");
+            }
+            const isValidPassword = await Crypto.comparePasswords(password, user.password);
+            if (!isValidPassword) {
+                throw new Error("Senha incorreta");
+            }
+            // Todo verificar se a senha está correta
+            await User.update({
+                name: name || user.name,
+                email: email || user.email,                
+                image: image || user.image
+            }, {
+                where: {
+                    id
+                }
+            });                  
             res.sendStatus(204);            
-    } catch(e) {
-        res.send("Usuário não existe");
+    } catch(e) {        
+        res.status(400).send({error: e.message});
     }   
 }
 

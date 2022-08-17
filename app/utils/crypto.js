@@ -1,13 +1,15 @@
 const bcrypt = require('bcrypt');
 
 class Crypto {
+    static async encryptPassword(password) {
+        const salt = await bcrypt.genSalt(10);
+        const encryptPassword = bcrypt.hash(password, salt);
+        return encryptPassword;
+    }
 
-    Encrypt = {
-        cryptPassword: (password) =>
-            bcrypt.genSalt(10)
-            .then((salt => bcrypt.hash(password, salt)))
-            .then(hash => hash),
-    }          
+    static async comparePasswords(password, passwordToCompare) {
+        return await bcrypt.compare(password, passwordToCompare);
+    }
 }
 
-module.exports = new Crypto;
+module.exports = Crypto;
