@@ -1,16 +1,10 @@
 const express = require("express");
 const router = express.Router();
-<<<<<<< HEAD
-// Colocar um nome de variável mais significativa.
-const mesa = require('../controllers/controller.js');
-// Adicionar validação em todos os métodos necessários.
-=======
 const Validacoes = require('../validations/validations.js');
 const UserController = require('../controllers/usercontroller.js');
 const Intercept = require('../utils/interception');
 const User = require("../models/User.js");
 
->>>>>>> 80039b8 (correção de erros)
 router.post(
   '/users', 
   Validacoes.add(),

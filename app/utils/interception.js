@@ -1,4 +1,3 @@
-const { validationResult } = require("express-validator");//está pegando do nodemodules
 const messages = require('../utils/messagens');
 
 class Intercept {

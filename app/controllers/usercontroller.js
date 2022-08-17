@@ -19,7 +19,7 @@ const Crypto = require('../utils/crypto.js');
               password: myEncryptPassword, 
               image
             });
-            res.status(201).json({ error: 'Sucesso!', UserData});
+            res.status(201).json({message: 'Sucesso!', UserData});
     }
 
     async findOneUser(req, res) {
@@ -47,7 +47,6 @@ const Crypto = require('../utils/crypto.js');
             if (!isValidPassword) {
                 throw new Error("Senha incorreta");
             }
-            // Todo verificar se a senha está correta
             await User.update({
                 name: name || user.name,
                 email: email || user.email,                
