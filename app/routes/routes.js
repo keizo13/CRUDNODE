@@ -1,31 +1,41 @@
 const express = require("express");
 const router = express.Router();
-
-const mesa = require('../controllers/controller.js');
+const Validacoes = require('../validations/validations.js');
+const Crud = require('../controllers/Usercontroller.js');
+const { intercept } = require('../utils/interception');
 
 router.post(
   '/users', 
-  mesa.add.bind(mesa)
+  Validacoes.add(),
+  intercept,
+  Crud.add.bind(Crud)
 );
 
 router.get(
   '/users',
-  mesa.index
+  Crud.index
 );
   
 router.get(
-  '/users/:id', 
-  mesa.unic
+  '/users/:id',
+  Validacoes.findoneuser(),
+  intercept, 
+  Crud.findoneuser
+
 );
   
 router.put(
   '/users/:id',
-  mesa.alter
+  Validacoes.alter(),
+  intercept,
+  Crud.alter
 );
   
 router.delete(
   '/users/:id',
-  mesa.delete
+  Validacoes.delete(),
+  intercept,
+  Crud.delete
 );
 
 module.exports = router;
