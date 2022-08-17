@@ -1,3 +1,4 @@
+const { validationResult } = require("express-validator");
 const messages = require('../utils/messagens');
 
 class Intercept {
