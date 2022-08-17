@@ -6,42 +6,43 @@ const mesa = require('../controllers/controller.js');
 // Adicionar validação em todos os métodos necessários.
 =======
 const Validacoes = require('../validations/validations.js');
-const Crud = require('../controllers/Usercontroller.js');
-const { intercept } = require('../utils/interception');
+const UserController = require('../controllers/usercontroller.js');
+const Intercept = require('../utils/interception');
+const User = require("../models/User.js");
 
 >>>>>>> 80039b8 (correção de erros)
 router.post(
   '/users', 
   Validacoes.add(),
-  intercept,
-  Crud.add.bind(Crud)
+  Intercept.intercept,
+  UserController.add.bind(UserController)
 );
 
 router.get(
   '/users',
-  Crud.index
+  UserController.index
 );
   
 router.get(
   '/users/:id',
-  Validacoes.findoneuser(),
-  intercept, 
-  Crud.findoneuser
+  Validacoes.findOneUser(),
+  Intercept.intercept, 
+  UserController.findOneUser
 
 );
   
 router.put(
   '/users/:id',
   Validacoes.alter(),
-  intercept,
-  Crud.alter
+  Intercept.intercept,
+  UserController.alter
 );
   
 router.delete(
   '/users/:id',
   Validacoes.delete(),
-  intercept,
-  Crud.delete
+  Intercept.intercept,
+  UserController.delete
 );
 
 module.exports = router;

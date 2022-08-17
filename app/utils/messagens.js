@@ -1,6 +1,5 @@
+class Message {
+  
+    s001 = (field) => `${field} - campo obrigatório.`;}
 
-messages = {};
-
-messages.s001 = (field) => `${field} - campo obrigatório.`;
-
-module.exports = messages;
+module.exports = new Message;
