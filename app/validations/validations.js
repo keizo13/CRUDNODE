@@ -34,8 +34,7 @@ class Validacoes {
     
     changePassword() {
         return [
-            body(['password'], 'Campo obrigatório').notEmpty(),
-            body('password').isLength({min: 6}).withMessage("A senha precisa ter no mínimo 6 caracteres!")
+            body(['password', 'newPassword'], 'Campo obrigatório').notEmpty()
         ];
     }
 }

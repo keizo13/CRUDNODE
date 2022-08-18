@@ -57,7 +57,7 @@ const Crypto = require('../utils/crypto.js');
             }
             );
             if(!updateUser[0]) {
-                throw new Error("Não foi possível atualizar o usuário!") 
+                throw new Error("Não foi possível atualizar o usuário!");
             } 
             res.sendStatus(204);     
             
@@ -74,23 +74,31 @@ const Crypto = require('../utils/crypto.js');
     }
 
     async password(req, res) {
-        const { id } = req.params;
-        const { password } = req.body;
-        const myEncryptPassword = await Crypto.encryptPassword(password);
-        const user = await User.findByPk(id);
-        if (!user) {
-            throw new Error("Usuário não existe");
-        }
-        await User.update({
-            password: myEncryptPassword || user.password 
-        }, {
-            where: {
-                id
+        try{
+            const { id } = req.params;
+            const { password, newPassword } = req.body;
+            const myEncryptPassword = await Crypto.encryptPassword(newPassword);
+            const user = await User.findByPk(id);
+            if (!user) {
+                throw new Error("Usuário não encontrado!"); 
             }
-        }
-        );
-        res.status(201).json({message: 'Senha alterada com sucesso!'}); 
+            const isValidPassword = await Crypto.comparePasswords(password, user.password);
+            if (!isValidPassword) {
+                throw new Error("Senha incorreta!"); 
+            }
+            await User.update({
+                password: myEncryptPassword || user.password 
+            }, {
+                where: {
+                    id
+                }
+            }
+            );
+            res.sendStatus(204);
+    }   catch(e)  {
+        res.status(400).send({error: e.message});  
     }
   }
+}
 
   module.exports = new UserController();
