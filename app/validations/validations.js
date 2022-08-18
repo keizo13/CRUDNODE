@@ -7,6 +7,7 @@ class Validacoes {
     add() {
         return [
             body(['name', 'email', 'password', 'image'], 'Campo obrigatório').notEmpty(),
+            body('email').isEmail().withMessage("O E-mail está em formato incorreto!")
         ];
     }
 
@@ -18,13 +19,20 @@ class Validacoes {
 
     alter() {
         return [
-            body(['name', 'email', 'password', 'image'], 'Campo obrigatório').isString()
+            body(['name', 'email', 'password', 'image'], 'Campo obrigatório').isString(),
+            body('email').isEmail().withMessage("O E-mail está em formato incorreto!")
         ];
     }
 
     delete() {
         return [
             param(['id'], 'Campo obrigatório').notEmpty()
+        ];
+    }
+    
+    changePassword() {
+        return [
+            body(['password'], 'Campo obrigatório').notEmpty()
         ];
     }
 }

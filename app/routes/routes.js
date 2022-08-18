@@ -39,4 +39,11 @@ router.delete(
   UserController.delete
 );
 
+router.put(
+  '/users/password/:id',
+  Validacoes.changePassword(),
+  Intercept.intercept,
+  UserController.password
+);
+
 module.exports = router;

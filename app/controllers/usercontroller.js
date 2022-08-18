@@ -12,14 +12,13 @@ const Crypto = require('../utils/crypto.js');
      
             const {name, email, password, image} = req.body;      
             const myEncryptPassword = await Crypto.encryptPassword(password);
-            const UserData = {name, email, password, image} ; 
-            await User.create({
+            const UserData = await User.create({
               name,
               email,
               password: myEncryptPassword, 
               image
             });
-            res.status(201).json({message: 'Sucesso!', UserData});
+            res.status(201).json({message: 'Sucesso!', name, email, image});
     }
 
     async findOneUser(req, res) {
@@ -47,7 +46,7 @@ const Crypto = require('../utils/crypto.js');
             if (!isValidPassword) {
                 throw new Error("Senha incorreta");
             }
-            await User.update({
+            const updateUser = await User.update({
                 name: name || user.name,
                 email: email || user.email,                
                 image: image || user.image
@@ -55,8 +54,14 @@ const Crypto = require('../utils/crypto.js');
                 where: {
                     id
                 }
-            });                  
-            res.sendStatus(204);            
+            }
+            );
+            if(!updateUser[0]) {
+                throw new Error("Não foi possível atualizar o usuário!") 
+            } 
+            res.sendStatus(204);     
+            
+
     } catch(e) {        
         res.status(400).send({error: e.message});
     }   
@@ -66,6 +71,23 @@ const Crypto = require('../utils/crypto.js');
         const { id } = req.params;
         await User.destroy({where: {id}});
         res.sendStatus(204);
+    }
+    async password(req, res) {
+        const { id } = req.params;
+        const { password } = req.body;
+        const user = await User.findByPk(id);
+        if (!user) {
+            throw new Error("Usuário não existe");
+        }
+        await User.update({
+            password: password || user.password
+        }, {
+            where: {
+                id
+            }
+        }
+        );
+        res.status(201).json({message: 'Senha alterada com sucesso!'}); 
     }
   }
 
