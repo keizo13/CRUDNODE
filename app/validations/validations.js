@@ -1,13 +1,15 @@
 const router = require('express').Router();
 const User = require('../models/User.js');
 const { body, query, param } = require('express-validator');
+const { min } = require('../models/User.js');
 
 class Validacoes {
 
     add() {
         return [
             body(['name', 'email', 'password', 'image'], 'Campo obrigatório').notEmpty(),
-            body('email').isEmail().withMessage("O E-mail está em formato incorreto!")
+            body('email').isEmail().withMessage("O E-mail está em formato incorreto!"),
+            body('password').isLength({min: 6}).withMessage("A senha precisa ter mais de 6 caracteres!")
         ];
     }
 
@@ -32,7 +34,8 @@ class Validacoes {
     
     changePassword() {
         return [
-            body(['password'], 'Campo obrigatório').notEmpty()
+            body(['password'], 'Campo obrigatório').notEmpty(),
+            body('password').isLength({min: 6}).withMessage("A senha precisa ter mais de 6 caracteres!")
         ];
     }
 }

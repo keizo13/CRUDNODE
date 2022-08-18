@@ -72,6 +72,7 @@ const Crypto = require('../utils/crypto.js');
         await User.destroy({where: {id}});
         res.sendStatus(204);
     }
+
     async password(req, res) {
         const { id } = req.params;
         const { password } = req.body;
