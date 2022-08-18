@@ -75,12 +75,13 @@ const Crypto = require('../utils/crypto.js');
     async password(req, res) {
         const { id } = req.params;
         const { password } = req.body;
+        const myEncryptPassword = await Crypto.encryptPassword(password);
         const user = await User.findByPk(id);
         if (!user) {
             throw new Error("Usuário não existe");
         }
         await User.update({
-            password: password || user.password
+            password: myEncryptPassword || user.password 
         }, {
             where: {
                 id
