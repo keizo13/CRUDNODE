@@ -1,17 +1,15 @@
-// const Encrypt = {
-//     cryptPassword: (password) =>
-//         bcrypt.genSalt(10)
-//         .then((salt => bcrypt.hash(password, salt)))
-//         .then(hash => hash),
-//     }
-// app.post('/users', async (req, res) => {
-//   const {name, email, password, image} = req.body;
-//   const myEncryptPassword = await Encrypt.cryptPassword(password);
-//   await User.create({
-//     name,
-//     email,
-//     password: myEncryptPassword, 
-//     image
-//   });
-//   res.send("success");
-// });
+const bcrypt = require('bcrypt');
+
+class Crypto {
+    static async encryptPassword(password) {
+        const salt = await bcrypt.genSalt(10);
+        const encryptPassword = bcrypt.hash(password, salt);
+        return encryptPassword;
+    }
+
+    static async comparePasswords(password, passwordToCompare) {
+        return await bcrypt.compare(password, passwordToCompare);
+    }
+}
+
+module.exports = Crypto;
