@@ -86,15 +86,17 @@ const Crypto = require('../utils/crypto.js');
             if (!isValidPassword) {
                 throw new Error("Senha incorreta!"); 
             }
-            await User.update({
-                password: myEncryptPassword || user.password 
+            const response = await User.update({
+                password: myEncryptPassword
             }, {
                 where: {
                     id
                 }
             }
             );
-            res.sendStatus(204);
+            if(response){
+                res.status(200).json({message: "Senha atualizada!"});
+            }
     }   catch(e)  {
         res.status(400).send({error: e.message});  
     }
