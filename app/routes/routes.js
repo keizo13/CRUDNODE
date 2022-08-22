@@ -21,7 +21,7 @@ router.get(
   '/users/:id',
   Validacoes.findOneUser(),
   Intercept.intercept, 
-  UserController.findOneUser
+  UserController.findOneUser.bind(UserController)
 
 );
   
@@ -29,7 +29,7 @@ router.put(
   '/users/:id',
   Validacoes.alter(),
   Intercept.intercept,
-  UserController.alter
+  UserController.alter.bind(UserController)
 );
   
 router.delete(
@@ -43,7 +43,7 @@ router.put(
   '/users/password/:id',
   Validacoes.changePassword(),
   Intercept.intercept,
-  UserController.password
+  UserController.password.bind(UserController)
 );
 
 module.exports = router;
