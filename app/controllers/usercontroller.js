@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Crypto = require('../utils/crypto.js');
+const bcrypt = require('bcrypt');
 
 class UserController {
 
@@ -20,7 +21,6 @@ class UserController {
       });
 
       this.validate(newUser, "Não foi possível criar usuário.");
-
       res.status(201).json({ message: 'Sucesso!', name, email, image });
     } catch {
       res.status(400).send({ error: e.message });
@@ -54,12 +54,8 @@ class UserController {
         }
       }
       );
-
       this.validate(updateUser[0], "usuario atualizado!");
-
       res.sendStatus(204);
-
-
     } catch (e) {
       res.status(400).send({ error: e.message });
     }
@@ -92,8 +88,20 @@ class UserController {
       res.status(400).send({ error: e.message });
     }
   }
+  async login(req, res) {
 
-  async validatePassword(password, passwordToCompare) {    
+    try {
+      const { email, password } = req.body;
+      const user = await this.getEmail(email);
+      await this.validatePassword(password, user.password);
+      res.status(201).send({ message: "sucesso" });
+
+    } catch (e) {
+      res.status(500).send({ error: e.message });
+    }
+  }
+
+  async validatePassword(password, passwordToCompare) {
     const isValidPassword = await Crypto.comparePasswords(password, passwordToCompare);
     this.validate(isValidPassword, "Senha incorreta!");
   }
@@ -102,6 +110,11 @@ class UserController {
     if (!data) {
       throw new Error(errorMessage);
     }
+  }
+  async getEmail(email){
+    const user = await User.findOne({where: {email}});
+    this.validate(user, "E-mail não encontrado");
+    return user;
   }
 
   async getUser(id) {

@@ -37,6 +37,12 @@ class Validacoes {
             body(['password', 'newPassword'], 'Campo obrigatório').notEmpty()
         ];
     }
+    
+    login() {
+        return [
+            body(['email', 'password'], 'Campo obrigatório').notEmpty()
+        ];
+    }
 }
 
 module.exports = new Validacoes();
