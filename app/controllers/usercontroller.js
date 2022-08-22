@@ -12,7 +12,7 @@ const Crypto = require('../utils/crypto.js');
      
             const {name, email, password, image} = req.body;      
             const myEncryptPassword = await Crypto.encryptPassword(password);
-            const UserData = await User.create({
+            await User.create({
               name,
               email,
               password: myEncryptPassword, 
@@ -24,7 +24,7 @@ const Crypto = require('../utils/crypto.js');
     async findOneUser(req, res) {
         try {
             const { id } = req.params;
-            const user = await  this.validateUser(id);
+            const user = await  this.getUser(id);
             res.send(user);
         } catch(e) {
             res.status(404).send({ error: e.message });
@@ -35,9 +35,8 @@ const Crypto = require('../utils/crypto.js');
         try { 
             const { id } = req.params;
             const { name, email, password, image } = req.body;
-            const user = await  this.validateUser(id);
-            const isValidPassword = await Crypto.comparePasswords(password, user.password);        
-            await this.validatePassword(isValidPassword);
+            const user = await  this.getUser(id);     
+            await this.validatePassword(password, user.password);
             const updateUser = await User.update({
                 name: name || user.name,
                 email: email || user.email,                
@@ -48,9 +47,9 @@ const Crypto = require('../utils/crypto.js');
                 }
             }
             );
-            if(!updateUser[0]){
-            await this.validateUpdate();
-            }
+    
+            await this.validate(updateUser[0], "usuario atualizado!");
+
             res.sendStatus(204);     
             
 
@@ -70,9 +69,8 @@ const Crypto = require('../utils/crypto.js');
             const { id } = req.params;
             const { password, newPassword } = req.body;
             const myEncryptPassword = await Crypto.encryptPassword(newPassword);
-            const user = await  this.validateUser(id);          
-            const isValidPassword = await Crypto.comparePasswords(password, user.password);        
-            await this.validatePassword(isValidPassword);
+            const user = await this.getUser(id);                      
+            await this.validatePassword(password, user.password);
             const updatePassword = await User.update({
                 password: myEncryptPassword
             }, {
@@ -81,27 +79,25 @@ const Crypto = require('../utils/crypto.js');
                 }
             }
             );
-            if(!updatePassword[0])
-                {
-                await this.validateUpdate();
-                }
+            this.validate(updatePassword[0], "Não foi possível atualizar a senha");
             res.sendStatus(204);  
     }   catch(e)  {
         res.status(400).send({error: e.message});  
     }
   }
 
-    async validatePassword(isValidPassword){
-        if (!isValidPassword) {
-            throw new Error("Senha incorreta!"); 
+    async validatePassword(password, passwordToCompare){
+        const isValidPassword = await Crypto.comparePasswords(password, passwordToCompare);        
+        await this.validate(isValidPassword, "Senha incorreta!");        
+    }
+
+    async validate(data, errorMessage){
+        if(!data) {
+            throw new Error(errorMessage);
         }
     }
-
-    async validateUpdate(){
-            throw new Error("Não foi possível atualizar o usuário!");
-    }
-
-    async validateUser(id) {
+    
+    async getUser(id) {
         const user = await User.findByPk(id);
         if (!user) {
             throw new Error("Usuário não existe");
