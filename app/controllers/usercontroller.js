@@ -73,7 +73,8 @@ class UserController {
       const { password, newPassword } = req.body;
       const myEncryptPassword = await Crypto.encryptPassword(newPassword);
       const user = await this.getUser(id);
-      await this.validatePassword(password, user.password);
+      errorMessage = "Senha incorreta!";
+      await this.validatePassword(password, user.password, errorMessage);
       const updatePassword = await User.update({
         password: myEncryptPassword
       }, {
@@ -92,18 +93,19 @@ class UserController {
 
     try {
       const { email, password } = req.body;
-      const user = await this.getEmail(email);
-      await this.validatePassword(password, user.password);
+      const user = await this.getUserByEmail(email);
+      const errorMessage = "E-mail não encontrado";
+      await this.validatePassword(password, user.password, errorMessage);
       res.status(201).send({ message: "sucesso" });
 
     } catch (e) {
-      res.status(500).send({ error: e.message });
+      res.status(400).send({ error: e.message });
     }
   }
 
-  async validatePassword(password, passwordToCompare) {
+  async validatePassword(password, passwordToCompare, errorMessage) {
     const isValidPassword = await Crypto.comparePasswords(password, passwordToCompare);
-    this.validate(isValidPassword, "Senha incorreta!");
+    this.validate(isValidPassword, errorMessage);
   }
 
   validate(data, errorMessage) {
@@ -111,9 +113,9 @@ class UserController {
       throw new Error(errorMessage);
     }
   }
-  async getEmail(email){
+  async getUserByEmail(email, errorMessage){
     const user = await User.findOne({where: {email}});
-    this.validate(user, "E-mail não encontrado");
+    this.validate(user, errorMessage);
     return user;
   }
 
