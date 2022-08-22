@@ -73,7 +73,7 @@ class UserController {
       const { password, newPassword } = req.body;
       const myEncryptPassword = await Crypto.encryptPassword(newPassword);
       const user = await this.getUser(id);
-      errorMessage = "Senha incorreta!";
+      const errorMessage = "Senha incorreta!";
       await this.validatePassword(password, user.password, errorMessage);
       const updatePassword = await User.update({
         password: myEncryptPassword
@@ -93,8 +93,8 @@ class UserController {
 
     try {
       const { email, password } = req.body;
-      const user = await this.getUserByEmail(email);
-      const errorMessage = "E-mail não encontrado";
+      const errorMessage = "Usuário ou senha inválidos";
+      const user = await this.getUserByEmail(email, errorMessage);
       await this.validatePassword(password, user.password, errorMessage);
       res.status(201).send({ message: "sucesso" });
 
