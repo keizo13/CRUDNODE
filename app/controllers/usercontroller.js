@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Crypto = require('../utils/crypto.js');
+const bcrypt = require('bcrypt');
 
 class UserController {
 
@@ -20,7 +21,6 @@ class UserController {
       });
 
       this.validate(newUser, "Não foi possível criar usuário.");
-
       res.status(201).json({ message: 'Sucesso!', name, email, image });
     } catch {
       res.status(400).send({ error: e.message });
@@ -54,12 +54,8 @@ class UserController {
         }
       }
       );
-
       this.validate(updateUser[0], "usuario atualizado!");
-
       res.sendStatus(204);
-
-
     } catch (e) {
       res.status(400).send({ error: e.message });
     }
@@ -77,7 +73,8 @@ class UserController {
       const { password, newPassword } = req.body;
       const myEncryptPassword = await Crypto.encryptPassword(newPassword);
       const user = await this.getUser(id);
-      await this.validatePassword(password, user.password);
+      const errorMessage = "Senha incorreta!";
+      await this.validatePassword(password, user.password, errorMessage);
       const updatePassword = await User.update({
         password: myEncryptPassword
       }, {
@@ -92,16 +89,34 @@ class UserController {
       res.status(400).send({ error: e.message });
     }
   }
+  async login(req, res) {
 
-  async validatePassword(password, passwordToCompare) {    
+    try {
+      const { email, password } = req.body;
+      const errorMessage = "Usuário ou senha inválidos";
+      const user = await this.getUserByEmail(email, errorMessage);
+      await this.validatePassword(password, user.password, errorMessage);
+      res.status(201).send({ message: "sucesso" });
+
+    } catch (e) {
+      res.status(400).send({ error: e.message });
+    }
+  }
+
+  async validatePassword(password, passwordToCompare, errorMessage) {
     const isValidPassword = await Crypto.comparePasswords(password, passwordToCompare);
-    this.validate(isValidPassword, "Senha incorreta!");
+    this.validate(isValidPassword, errorMessage);
   }
 
   validate(data, errorMessage) {
     if (!data) {
       throw new Error(errorMessage);
     }
+  }
+  async getUserByEmail(email, errorMessage){
+    const user = await User.findOne({where: {email}});
+    this.validate(user, errorMessage);
+    return user;
   }
 
   async getUser(id) {

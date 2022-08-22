@@ -37,6 +37,13 @@ class Validacoes {
             body(['password', 'newPassword'], 'Campo obrigatório').notEmpty()
         ];
     }
+    
+    login() {
+        return [
+            body(['email', 'password'], 'Campo obrigatório').notEmpty(),
+            body('email').isEmail().withMessage("O E-mail está em formato incorreto!")
+        ];
+    }
 }
 
 module.exports = new Validacoes();

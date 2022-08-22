@@ -46,4 +46,11 @@ router.put(
   UserController.password.bind(UserController)
 );
 
+router.post(
+  '/login',
+  Validacoes.login(),
+  Intercept.intercept,
+  UserController.login.bind(UserController)
+);
+
 module.exports = router;
