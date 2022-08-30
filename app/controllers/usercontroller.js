@@ -96,7 +96,7 @@ class UserController {
       const errorMessage = "Usuário ou senha inválidos";
       const user = await this.getUserByEmail(email, errorMessage);
       await this.validatePassword(password, user.password, errorMessage);
-      res.status(201).send({ message: "sucesso" });
+      res.status(200).send({ message: "sucesso" });
 
     } catch (e) {
       res.status(400).send({ error: e.message });
