@@ -26,7 +26,7 @@ router.get(
 );
   
 router.put(
-  '/users/:id',
+  '/users',
   Validacoes.alter(),
   Intercept.intercept,
   UserController.alter.bind(UserController)
