@@ -87,16 +87,14 @@ class UserController {
       res.status(400).send({ error: e.message });
     }
   }
-  async login(req, res) {
 
+  async login(req, res) {
     try {
       const { email, password } = req.body; 
       const errorMessage = "Usuário ou senha inválidos";
       const user = await this.getUserByEmail(email, errorMessage);
       await this.validatePassword(password, user.password, errorMessage);
       res.status(200).send({ message: "sucesso", user});
-
-
     } catch (e) {
       res.status(400).send({ error: e.message });
     }
