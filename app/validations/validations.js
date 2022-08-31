@@ -7,7 +7,7 @@ class Validacoes {
 
     add() {
         return [
-            body(['name', 'email', 'password', 'image'], 'Campo obrigatório').notEmpty(),
+            body(['name', 'email', 'password'], 'Campo obrigatório').notEmpty(),
             body('email').isEmail().withMessage("O E-mail está em formato incorreto!"),
             body('password').isLength({min: 6}).withMessage("A senha precisa ter no mínimo 6 caracteres!")
         ];
@@ -21,7 +21,7 @@ class Validacoes {
 
     alter() {
         return [
-            body(['name', 'email', 'password', 'image'], 'Campo obrigatório').isString(),
+            body(['name', 'email', 'password'], 'Campo obrigatório').isString(),
             body('email').isEmail().withMessage("O E-mail está em formato incorreto!")
         ];
     }

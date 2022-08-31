@@ -11,17 +11,16 @@ class UserController {
 
   async add(req, res) {
     try {
-      const { name, email, password, image } = req.body;
+      const { name, email, password } = req.body;
       const myEncryptPassword = await Crypto.encryptPassword(password);
       const newUser = await User.create({
         name,
         email,
-        password: myEncryptPassword,
-        image
+        password: myEncryptPassword
       });
 
       this.validate(newUser, "Não foi possível criar usuário.");
-      res.status(201).json({ message: 'Sucesso!', name, email, image });
+      res.status(201).json({ message: 'Sucesso!', name, email });
     } catch {
       res.status(400).send({ error: e.message });
 
@@ -41,13 +40,13 @@ class UserController {
   async alter(req, res) {
     try {
       const { id } = req.params;
-      const { name, email, password, image } = req.body;
+      const { name, email, password } = req.body;
+      const iduser = await User.findOne({where: {email}});
       const user = await this.getUser(id);
       await this.validatePassword(password, user.password);
       const updateUser = await User.update({
         name: name || user.name,
-        email: email || user.email,
-        image: image || user.image
+        email: email || user.email
       }, {
         where: {
           id
@@ -92,11 +91,13 @@ class UserController {
   async login(req, res) {
 
     try {
-      const { email, password } = req.body;
+      const { email, password } = req.body; 
+      const iduser = await User.findOne({where: {email}});
       const errorMessage = "Usuário ou senha inválidos";
       const user = await this.getUserByEmail(email, errorMessage);
       await this.validatePassword(password, user.password, errorMessage);
-      res.status(200).send({ message: "sucesso" });
+      res.status(200).send({ message: "sucesso", iduser});
+
 
     } catch (e) {
       res.status(400).send({ error: e.message });
